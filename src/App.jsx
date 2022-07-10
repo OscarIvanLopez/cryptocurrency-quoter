@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
+
 import Form from "./components/Form";
+import Result from "./components/Result";
+import Spinner from "./components/Spinner";
 import cryptoImage from "./img/imagen-criptos.png";
 
 const Container = styled.div`
@@ -42,19 +45,30 @@ const Heading = styled.h1`
 
 const App = () => {
   const [currencies, setCurrencies] = useState({});
+  const [quoteResult, setQuoteResult] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // This validates if the currencies state got data
     if (Object.keys(currencies).length > 0) {
+      // start loading
+      setLoading(true);
+      // destructuring the cyrrencies from the Form component
       const { currency, cryptoCurrency } = currencies;
+
+      // this function fetch the currencies data
       const quoteCrypto = async () => {
         const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${cryptoCurrency}&tsyms=${currency}`;
 
         const response = await fetch(url);
         const result = await response.json();
 
-        console.log(result);
-      };
+        setQuoteResult(result.DISPLAY[cryptoCurrency][currency]);
 
+        // stop loading
+        setLoading(false);
+      };
+      // function call
       quoteCrypto();
     }
   }, [currencies]);
@@ -66,6 +80,12 @@ const App = () => {
         <Heading>Trade cryptocurrencies instantly</Heading>
 
         <Form setCurrencies={setCurrencies} />
+
+        {loading ? (
+          <Spinner />
+        ) : (
+          quoteResult.PRICE && <Result quoteResult={quoteResult} />
+        )}
       </div>
     </Container>
   );
