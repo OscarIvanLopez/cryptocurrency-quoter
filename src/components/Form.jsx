@@ -49,7 +49,7 @@ const Form = ({ setCurrencies }) => {
       const arrayCryptos = Data.map((crypto) => {
         const object = {
           id: crypto.CoinInfo.Name,
-          name: crypto.CoinInfo.Name,
+          name: crypto.CoinInfo.FullName,
         };
 
         return object;
